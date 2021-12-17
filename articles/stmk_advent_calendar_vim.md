@@ -3,7 +3,7 @@ title: "Vimを支える技術: Alacritty, AquaSKK, tmux, Language Server… 高�
 emoji: "🖊️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [vim, alacritty, aquaskk, tmux, languageserver]
-published: false
+published: true
 ---
 
 [![ストックマーク Advent Calendar 2021](/images/stmk/stmk-advent-calendar2021-banner.jpg)](https://adventar.org/calendars/6612 "ストックマーク Advent Calendar 2021 - Adventar")
