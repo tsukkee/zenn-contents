@@ -1,8 +1,8 @@
 ---
-title: "Vimを支える技術: Alacritty, AquaSKK, tmux, Language Server… 楽しいモノレポ開発の世界"
+title: "Vimを支える技術: Alacritty, AquaSKK, tmux, Language Server… 高速ウェブ開発の世界"
 emoji: "🖊️"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: [vim, alacritty, aquaskk, tmux]
+topics: [vim, alacritty, aquaskk, tmux, languageserver]
 published: false
 ---
 
@@ -22,13 +22,34 @@ Astrategyの技術構成については以前に[Astrategyを支える技術: gR
 
 ということで、以降では私のVim環境 on macOSについて紹介したいと思います。なお、私のこのあたりの設定ファイルはだいたい[GitHubで公開している](https://github.com/tsukkee/config "tsukkee/config: My dotfiles.")ので興味のある方はあわせてご覧ください。
 
-# ポイント
-CUIと言えば、なんだか真っ黒で味気ない画面を想像する方もいるかも知れませんが、昨今のターミナルはTrue color(RGBの24bit color)表示ができるので、以下で詳細を述べますが、Alacritty + tmux + VimでTrue color表示できる環境を構築します。
+# なぜVimを使うのか？
+そもそもなぜVimを使っているのかは語り出すと色々あるのですが、おおまかにはプログラムのソースコード(MarkdownやLaTeXなどによるドキュメントも含む)を編集することに特化した機能が多く搭載されているとことと、全ての操作がキーボードで完結して素早く操作できるところかなと思います。
 
-また、VimのLanguage Serverまわりでは、vim-lspというLanguage Serverクライアントプラグインを軸に、Formatter, Linter, Fuzzy Finderが連携できるように設定します。
+具体的な例としては、テキストオブジェクトという機能があり、様々な単位でテキストの固まりをオブジェクトとして扱って編集できる機能があります。例えば、以下のようなテキストがあり`|`にカーソルがあったときに、
+
+```javascript 
+funciton hoge(arg1, |arg2) {
+```
+
+`di(`と入力すると`d`が消す、`i`が内側、`(`で丸カッコということで、`()`内のどこにカーソルがあっても一気に引数部分を消して以下のような状態にすることができます。
+
+```javascript
+funciton hoge(|) {
+```
+
+ソースコードを書いていると、このようにテキストを固まりで扱うことが多いのでこれは大変役に立つ機能です。Vimを学ぶでもっともオススメの書籍である[Practical Vim](https://pragprog.com/titles/dnvim2/practical-vim-second-edition/)(日本語版: [実践Vim](https://www.amazon.co.jp/%E5%AE%9F%E8%B7%B5Vim-%E6%80%9D%E8%80%83%E3%81%AE%E3%82%B9%E3%83%94%E3%83%BC%E3%83%89%E3%81%A7%E7%B7%A8%E9%9B%86%E3%81%97%E3%82%88%E3%81%86-Drew-Neil/dp/4048916599))にも「Edit Text at the Speed of Thought(思考のスピードで編集しよう!)」というキャッチフレーズが付いていますが、正にこの感覚を得られるところが素晴しいところだと感じています。
+
+# 環境構築のポイント
+このように素晴しいVimをCUIで使おうと思うのですが、CUIと言えばなんだか真っ黒で味気ない画面を想像する方もいるかも知れません。しかし、昨今のターミナルはTrue color(RGBの24bit color)表示ができるので、以下で詳細を述べますが、Alacritty + tmux + VimでTrue color表示できる環境を構築します。
+
+また、VimでもLanguage Serverを活用することでVisual Studio Codeなど他のテキストエディタと遜色ないコーディング環境を作ることができるので、ここではvim-lspというLanguage Serverクライアントプラグインを軸に、Formatter, Linter, Fuzzy Finderが連携できるように設定します。
+
+最終的には以下のような感じになります。
+
+![](/images/stmk/my_vim.png =800x)
 
 # ターミナル
-Vimを使う上では、大きく、CUI上のVimを使うのか、GUI版のGVim(macOSなので[MacVim](https://macvim-dev.github.io/macvim/))を使うのかという選択肢があるのですが、私は他のCUIツールとの連携を重視してCUI版のVimを使っています^[なお、Neovimという選択肢もありますが、私はなんやかんやで15年以上はVimを使っており、今のところ積極的に移行する理由がなく、Neovimと同様に現在も活発に開発が続いているVimを使っています]。
+Vimを使う上では、CUI上のVimを使うのか、GUI版のgVim(macOSなので[MacVim](https://macvim-dev.github.io/macvim/))を使うのかという選択肢があるのですが、私は他のCUIツールとの連携を重視してCUI版のVimを使っています。なお、[Neovim](https://neovim.io/)という選択肢もありますが、私はなんやかんやで15年以上はVimを使っており、今のところ積極的に移行する理由がなく、Neovimと同様に現在も活発に開発が続いているVimを使っています。
 
 その上で、私は日本語入力に[AquaSKK](https://github.com/codefirst/aquaskk "codefirst/aquaskk: An input method without morphological analysis.")を使っています。ところが、この記事を執筆している段階でAquaSKKで良い感じに日本語入力できるターミナルは[Alacritty](https://github.com/alacritty/alacritty "alacritty/alacritty: A cross-platform, OpenGL terminal emulator.")のmasterブランチを自力でビルドしたもの(と、iTerm2も次点でギリいける)しか存在しません(筆者調べ)。適当に最新のRustをインストールしておいてから、GitHubからcloneしたディレクトリで
 
@@ -40,17 +61,17 @@ $ make app
 
 ![](/images/stmk/aquaskk.png =600x)
 
-ちなみに、他のターミナルの状況は以下のとおりです。他に良い情報をお持ちの方がいらっしゃしましたらどうにかして教えてください！
+ちなみに、私が試した範囲では、他のターミナルの状況は以下のとおりです。
 
 * Terminal.app: まずTrue color表示に対応していないので却下。
 * [iTerm2](https://iterm2.com/): [この記事](https://mac-ra.com/iterm2-aquqskk-lkey/ "ターミナルや iTerm2 で AquaSKK を使う場合 | 林檎コンピュータ")や[この記事](https://mzp.hatenablog.com/entry/2016/05/15/143636 "iTerm2 + AquaSKK - みずぴー日記")に記載の内容をがんばって設定するとだいたいいけるが、稀に入力切り替えができなくなることがある。
 * [Kitty](https://sw.kovidgoyal.net/kitty/): AquaSKKの入力切替は概ね問題ないが、Vimで日本語を書いているとどんどんその行の表示が壊れてくる。入力自体はできていて、他の行にカーソルを移動すると正常な表示に戻りはするが結構辛い。
 * [Hyper](https://hyper.is/): AquaSKKを使っていると「あ」「い」「う」「え」「お」が正しく入力できない(「a」「i」「u」「e」「o」とアルファベットになってしまう)。
-* リリース版のAlacritty: [こちらのIssue](https://github.com/alacritty/alacritty/issues/1101)で言及されている依存ライブラリの日本語入力対応が入っていないので、AquaSKKに限らず日本語が入力できない
+* リリース版のAlacritty: [こちらのIssue](https://github.com/alacritty/alacritty/issues/1101)で言及されている依存ライブラリの日本語入力対応が入っていないので、AquaSKKに限らず日本語が入力できない。
 
 Alacrittyは`~/.config/alacritty/alacritty.yml`を編集することで設定できます。[Alacrittyリポジトリに雛形がある](https://github.com/alacritty/alacritty/blob/master/alacritty.yml)のでこれをコピーしてきて、必要なところだけコメントを外すのが簡単です。私はあまり多くは設定しておらずだいたい以下のとおりです。フォントは[PremolJP](https://github.com/yuru7/PlemolJP)を利用しており、PremolJP Console NFの方を利用すれば[Nerd Fonts](https://www.nerdfonts.com/)も入るので見た目をかっこよくするのが簡単になります。
 
-```yaml
+```yaml: ~/.config/alacritty/alacritty.yml
 window:
   # バグ回避: https://github.com/alacritty/alacritty/issues/4474
   opacity: 0.99999
@@ -102,7 +123,7 @@ set-option -ga terminal-overrides ',alacritty:RGB'
 
 ようやくVimまで来ました。Alacritty、tmuxとTruc color設定をしてきましたが、さらにVimにも設定が必要です。Vimの`:h xterm-true-color`にだいたい説明がありますが、以下を`.vimrc`に設定します。
 
-```vim
+```vim: ~/.vimrc
 set termguicolors
 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
@@ -110,14 +131,14 @@ let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
 ちなみに、undercurl(下波線)対応のため`:h undercurl`を参考に以下の設定も追加していますが、私の環境ではAlacrittyではただの下線になってしまうようです。KittyやiTerm2はちゃんと波下線になったと思うので、そこはちょっと残念なところです。
 
-```vim
+```vim: ~/.vimrc
 let &t_Cs = "\e[4:3m"
 let &t_Ce = "\e[4:0m"
 ```
 
 # カラーテーマ
 
-次にカラーテーマですが、せっかくなのでAlacritty、tmux、Vimと同じカラーテーマを適用していきたいと思います。私が知っている範囲では[Nord](https://www.nordtheme.com/ "Nord")や[Dracula](https://draculatheme.com/ "Dracula — Dark theme for 227+ apps")あたりが、様々なアプリ向けに統一されたカラーテーマを提供していて、ここ最近はNordがお気に入りなので、それを使います。
+次にカラーテーマですが、せっかくなのでAlacritty、tmux、Vimと同じカラーテーマを適用していきたいと思います。私が知っている範囲では[Nord](https://www.nordtheme.com/ "Nord")や[Dracula](https://draculatheme.com/ "Dracula — Dark theme for 227+ apps")あたりが、様々なアプリ向けに統一されたカラーテーマを提供していて、ここ最近はNordがお気に入りなのでそれを使います。
 
 ## Alacritty
 [ココ](https://github.com/arcticicestudio/nord-alacritty)の内容を`.alacritty.yml`にコピペします。
@@ -125,14 +146,14 @@ let &t_Ce = "\e[4:0m"
 ## tmux
 [こちら](https://www.nordtheme.com/docs/ports/tmux/installation)を参考に、tpmを使ってインストールします。
 
-```shell
+```shell: ~/.tmux.conf
 set-option -g @plugin "arcticicestudio/nord-tmux"
 ```
 
 ## Vim
 [こちら](https://www.nordtheme.com/docs/ports/vim/installation)を参考にインストールします。ちなみに、Vimのプラグインマネージャーはいくつか実装があり、Nordのページではわりと広く使われている[vim-plug](https://github.com/junegunn/vim-plug)の設定例が記載されていますが、私は[minpac](https://github.com/k-takata/minpac)というシンプルなものを使っているので、設定は以下のとおりになります。
 
-```vim
+```vim: ~/.vimrc
 call minpac#init()
 call minpac#add('arcticicestudio/nord-vim')
 
@@ -152,9 +173,9 @@ colorscheme nord
 
 最近のウェブ開発においては、エディタと開発をサポートするツール群(Language Server、Formatter、Linterなど)は分離されていることがほとんで、そのおかげで開発メンバーは好きなエディタを使いつつ、同じFormatterやLinterを適用することで統制の取れたコードを書くことができます。例えば、AstrategyのフロントエンドはVueで作られているのですが、Language ServerとしてVolarを使おう、FormatterはPrettier、LinterはESLintといったところの合意が取れていれば、あとはeslintrcやprettierrcをリポジトリに入れておけば、どのエディタを使っても問題ない状態にすることができます。
 
-まず、Language ServerのクライアントはVim向けにいくつか実装がありますが、ここではVimでは広く使われていると思われる[vim-lsp](https://github.com/prabirshrestha/vim-lsp "prabirshrestha/vim-lsp: async language server protocol plugin for vim and neovim")を使います。さらに、自動補完用に[asyncomplete.vim](https://github.com/prabirshrestha/asyncomplete.vim "prabirshrestha/asyncomplete.vim: async completion in pure vim script for vim8 and neovim")、そしてスニペット補完用に[vim-vsnip](https://github.com/hrsh7th/vim-vsnip "hrsh7th/vim-vsnip: Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.")及び[vim-vsnip-integ](https://github.com/hrsh7th/vim-vsnip-integ "hrsh7th/vim-vsnip-integ: vim-vsnip integrations to other plugins.")を導入します。ちょっと長いですが、私の設定の肝はだいたい以下のとおりになっています。
+まず、Language ServerのクライアントはVim向けにいくつか実装がありますが、ここではVimでは広く使われていると思われる[vim-lsp](https://github.com/prabirshrestha/vim-lsp "prabirshrestha/vim-lsp: async language server protocol plugin for vim and neovim")を使います。さらに、自動補完用に[asyncomplete.vim](https://github.com/prabirshrestha/asyncomplete.vim "prabirshrestha/asyncomplete.vim: async completion in pure vim script for vim8 and neovim")、そしてスニペット補完用に[vim-vsnip](https://github.com/hrsh7th/vim-vsnip "hrsh7th/vim-vsnip: Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.")及び[vim-vsnip-integ](https://github.com/hrsh7th/vim-vsnip-integ "hrsh7th/vim-vsnip-integ: vim-vsnip integrations to other plugins.")を導入します。ちょっと長いですが、私の設定の肝はだいたい以下のとおりになっています。だいたい`g`が頭に付いたキーバインドでLanguage Serverのリネームや定義へのジャンプなど便利な機能をすぐに使えるようにしている感じです。
 
-```vim
+```vim: ~/.vimrc
 set completeopt& completeopt+=menuone,popup,noinsert,noselect
 set completepopup=height:10,width:60,highlight:InfoPopup
 
@@ -200,7 +221,7 @@ imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-T
 smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
 ```
 
-vim-lsp-settingsがインストールされていれば`:LspInstallServer`とするだけで、そのとき開いているファイルのfiletypeに応じたLanguage Serverがインストールされ、すぐに使いはじめることができます。Vueについては、デフォルトが[Veturの中身のvls](https://github.com/vuejs/vetur/tree/master/server)になっていますが、最近だと[Volar](https://github.com/johnsoncodehk/volar "johnsoncodehk/volar: ⚡ Explore high-performance tooling for Vue")の方が便利なので、`:LspInstallServer volar-server`とすると良いです。なお、vim-lsp-settingsのVolarの設定は私がPRを出していることが多い([これ](https://github.com/mattn/vim-lsp-settings/pull/454)とか[これ](https://github.com/mattn/vim-lsp-settings/pull/492)とか…PR作成にあたっていつもサポート頂いているVimコミュニティの方々に感謝！)ので、気付いたところがあれば教えていただくか、PRを出していただくと良いと思います。
+また、vim-lsp-settingsがインストールされているので`:LspInstallServer`とするだけで、そのとき開いているファイルのfiletypeに応じたLanguage Serverがインストールされ、すぐに使いはじめることができます。Vueについては、デフォルトが[Veturの中身のvls](https://github.com/vuejs/vetur/tree/master/server)になっていますが、最近だと[Volar](https://github.com/johnsoncodehk/volar "johnsoncodehk/volar: ⚡ Explore high-performance tooling for Vue")の方が便利なので`:LspInstallServer volar-server`とすると良いです。なお、vim-lsp-settingsのVolarの設定は私がPRを出していることが多い([これ](https://github.com/mattn/vim-lsp-settings/pull/454)とか[これ](https://github.com/mattn/vim-lsp-settings/pull/492)とか…PR作成にあたっていつもサポート頂いているVimコミュニティの方々に感謝！)ので、気付いたところがあれば教えていただくか、PRを出していただくと良いと思います。
 
 ところで、Visual Studio Code中心に発展してきているLanguage Server界隈ですが、その出自はVimだったりします。[Language Server ProtocolのWiki](https://github.com/microsoft/language-server-protocol/wiki/Protocol-History)にも記載がありますが、C#向けに開発されていたOmniSharpというVimプラグインが使っていた方式を発展させたのがLanguage Server Protocolになっているようです。
 
@@ -208,7 +229,7 @@ vim-lsp-settingsがインストールされていれば`:LspInstallServer`とす
 
 私のAstrategy開発だと、Vue + TypeScript + SCSSによるフロントエンド開発をメインに、webpackなどの設定でJavaScriptを書くこともあり、バックエンドまわりでPython(Poetry利用)とGoをちょろりと触り、あと実験的なところでRustもすこーしだけ触ることがあるので、だいたい以下の設定でどの言語で対応できるようにしています。
 
-```vim
+```vim: ~/.vimrc
 call minpac#add('dense-analysis/ale')
 call minpac#add('rhysd/vim-lsp-ale')
 
@@ -262,8 +283,6 @@ let g:clap_preview_direction = 'UD'
 
 ![](/images/stmk/vim-clap.png =800x)
 
-
 # おわりに
-
-ちなみに、最近は[JetBrains Fleet](https://www.jetbrains.com/fleet/ "JetBrains Fleet: The Next-Generation IDE by JetBrains")や[Zed](https://zed.dev/ "Zed")といった新しいエディタも登場しつつあり、気になっています。
+かなり駆け足でしたが、私が普段開発で使っているVim環境について紹介しました。Vimの環境構築に関する記事は世の中にたくさんありますが、Alacritty, AquaSKK, tmux, Vimの組み合わせを網羅しつつ必要十分な設定を紹介している記事はあまりないと思いますので、参考になるところがあればと思います。また、これまでVimを使ったことがないよという方(がこの記事を最後まで読んでくださっているか分かりませんが…)も、この機会にVimに興味を持ってもらえたら嬉しいです。
 
