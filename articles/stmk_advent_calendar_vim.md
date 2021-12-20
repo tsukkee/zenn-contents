@@ -211,7 +211,6 @@ let g:asyncomplete_auto_popup = 1
 let g:asyncomplete_auto_completeopt = 0
 let g:asyncomplete_popup_delay = 200
 let g:lsp_text_edit_enabled = 1
-let g:lsp_signs_enabled = 1
 
 imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
 smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
@@ -226,6 +225,7 @@ smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-T
 ところで、Visual Studio Code中心に発展してきているLanguage Server界隈ですが、その出自はVimだったりします。[Language Server ProtocolのWiki](https://github.com/microsoft/language-server-protocol/wiki/Protocol-History)にも記載がありますが、C#向けに開発されていたOmniSharpというVimプラグインが使っていた方式を発展させたのがLanguage Server Protocolになっているようです。
 
 話を戻して、FormatterとLinterの適用については、[ALE](https://github.com/dense-analysis/ale "dense-analysis/ale: Check syntax in Vim asynchronously and fix files, with Language Server Protocol (LSP) support")を使うのが簡単です。さらに、[vim-lsp-ale](https://github.com/rhysd/vim-lsp-ale "rhysd/vim-lsp-ale: Bridge between vim-lsp and ALE")と一緒に使うことで、vim-lspと良い感じに連携が取れるようになります。
+[2021/12/20 追記] コメント頂いてますが、vim-lspとFormatterやLinterの連携については、[efm-langserver](https://github.com/mattn/efm-langserver "GitHub - mattn/efm-langserver: General purpose Language Server")と[efm-langserver-settings](https://github.com/tsuyoshicho/vim-efm-langserver-settings "GitHub - tsuyoshicho/vim-efm-langserver-settings: vim lsp client - efm-langserver link and configure settings")を使う方法もあります。私は以前からALEを使っていたのでそのままvim-lspとALEの連携で使っていますが、これから環境構築される方は両方試してみても良いかも知れません。また、vim-lsp-aleはvim-lspとALEの機能が衝突しないように設定を調整してくれるので(詳細は`:h vim-lsp-ale`にて)そこで問題が発生することはありません。
 
 私のAstrategy開発だと、Vue + TypeScript + SCSSによるフロントエンド開発をメインに、webpackなどの設定でJavaScriptを書くこともあり、バックエンドまわりでPython(Poetry利用)とGoをちょろりと触り、あと実験的なところでRustもすこーしだけ触ることがあるので、だいたい以下の設定でどの言語で対応できるようにしています。
 
@@ -233,7 +233,6 @@ smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-T
 call minpac#add('dense-analysis/ale')
 call minpac#add('rhysd/vim-lsp-ale')
 
-let g:ale_disable_lsp = 1
 let g:ale_floating_preview = 1
 let g:ale_linters_explicit = 1
 let g:ale_fix_on_save = 1
@@ -254,10 +253,10 @@ let g:ale_linters = {
 \}
 let g:ale_linter_aliases = {'vue': ['vue', 'typescript', 'scss']}
 let g:ale_python_auto_poetry = 1
-nmap <C-K> <Plug>(ale_detail)
 
-nmap <buffer> g] <Plug>(ale_next)
-nmap <buffer> g[ <Plug>(ale_previous)
+nmap <C-K> <Plug>(ale_detail)
+nmap g] <Plug>(ale_next)
+nmap g[ <Plug>(ale_previous)
 ```
 
 # Fuzzy Finder
