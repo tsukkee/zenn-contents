@@ -66,6 +66,8 @@ $ make app
 * Terminal.app: まずTrue color表示に対応していないので却下。
 * [iTerm2](https://iterm2.com/): [この記事](https://mac-ra.com/iterm2-aquqskk-lkey/ "ターミナルや iTerm2 で AquaSKK を使う場合 | 林檎コンピュータ")や[この記事](https://mzp.hatenablog.com/entry/2016/05/15/143636 "iTerm2 + AquaSKK - みずぴー日記")に記載の内容をがんばって設定するとだいたいいけるが、稀に入力切り替えができなくなることがある。
 * [Kitty](https://sw.kovidgoyal.net/kitty/): AquaSKKの入力切替は概ね問題ないが、Vimで日本語を書いているとどんどんその行の表示が壊れてくる。入力自体はできていて、他の行にカーソルを移動すると正常な表示に戻りはするが結構辛い。
+[2022/1/5 追記] おそらく https://github.com/kovidgoyal/kitty/issues/4219 が取り込まれた影響で、Kittyでも0.24.0から日本語入力の問題がかなり解消されています！場合によってはAlacrittyではなくKittyを使うという選択肢もありそうです。
+
 * [Hyper](https://hyper.is/): AquaSKKを使っていると「あ」「い」「う」「え」「お」が正しく入力できない(「a」「i」「u」「e」「o」とアルファベットになってしまう)。
 * リリース版のAlacritty: [こちらのIssue](https://github.com/alacritty/alacritty/issues/1101)で言及されている依存ライブラリの日本語入力対応が入っていないので、AquaSKKに限らず日本語が入力できない。
 
