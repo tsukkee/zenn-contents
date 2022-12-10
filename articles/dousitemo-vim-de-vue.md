@@ -95,7 +95,7 @@ https://github.com/mattn/vim-lsp-settings/pull/627
 # おまけ
 昨年のAdvent Calendarでは、AquaSKKをターミナル上で使うことに命を懸けておりました。当時は、Alacrittyのmasterを自力でビルドするしか方法がなかったのですが、その後KittyやWezTermでも日本語入力への対応が進み、AquaSKKを問題なく使えるようになっています。以下のように互換性設定をすると良いです。
 
-![AquaSKKの互換性設定](/images/stmk/aquaskk-compatibilities.png)
+![AquaSKKの互換性設定](/images/stmk/aquaskk-compatibilities.png =600x)
 
 また、Alacrittyではundercurlが表示できないという問題もあったのですが、こちらも[対応されており](https://github.com/alacritty/alacritty/issues/1628)、今では問題なく表示できるようになっています。
 
