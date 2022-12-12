@@ -68,7 +68,7 @@ Volarが1.0になるタイミングで、[初期設定まわりに色々とリ�
 しかし、こちらの修正は他のLanguage Serverの挙動も変えることになり、さらにvim-lsp側の修正が必要となってしまい、最終的には[hrsh7thさんに修正していただきました](https://github.com/prabirshrestha/vim-lsp/pull/1387)。大変ありがたい限りです。
 
 
-# vim-lsp-settings
+## vim-lsp-settings
 
 https://github.com/mattn/vim-lsp-settings/pull/534
 
