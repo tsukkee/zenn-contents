@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/tsukkee/zenn-contents#readme",
   "devDependencies": {
-    "zenn-cli": "^0.1.99"
+    "zenn-cli": "^0.1.150"
   }
 }
