@@ -3,7 +3,7 @@ title: "VimにLanguage Serverの設定を追加する方法(RubyのSorbetを例�
 emoji: "💎"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["vim", "languageserver", "ruby", "sorbet"]
-published: false
+published: true
 ---
 
 # はじめに
